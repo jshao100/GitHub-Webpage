@@ -141,10 +141,10 @@ header ul:before {
 }
 
 li:hover {
-   background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #0055cc), color-stop(1, #0066cc) );
-   background:-moz-linear-gradient( center top, #0055cc 5%, #0066cc 100% );
-   filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#0055cc', endColorstr='#0066cc');
-   background-color:#0055cc;
+   background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #0073e6), color-stop(1, #0066cc) );
+   background:-moz-linear-gradient( center top, #0073e6 5%, #0066cc 100% );
+   filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#0073e6', endColorstr='#0066cc');
+   background-color:#0073e6;
    cursor:hand;
 }
 li:active {
