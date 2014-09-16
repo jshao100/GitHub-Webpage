@@ -18,41 +18,137 @@
     <div class="wrapper">
       <header>
         <h1>James Shao</h1>
-        <p>jshao100@gmail.com</br>shao57@purdue.edu</p>
+        <p>jshao100@gmail.com || shao57@purdue.edu</p>
         <p class="view"><a href="https://github.com/jshao100/GitHub-Webpage">View the Project on GitHub <small>jshao100/GitHub-Webpage</small></a></p>
         <ul>
-          <li><a href="https://www.google.com">View<strong>Resume</strong></a></li>
+          <li><a href="Resume.pdf">View<strong>Resume</strong></a></li>
           <li><a href="https://github.com/jshao100/">View<strong>GitHub</strong></a></li>
 		  <li><a href="https://www.linkedin.com/in/JamesShao">View<strong>LinkedIn</strong></a></li>
         </ul>
       </header>
       <section>
-        <h3>
-<a name="about-me" class="anchor" href="#about-me"><span class="octicon octicon-link"></span></a>About Me.</h3>
+        <h2>
+<a name="about-me" class="anchor" href="#about-me"><span class="octicon octicon-link"></span></a>About Me.</h2>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>Let's see, what is there to say? &mdash; I am currently a freshman enrolled at Purdue University studying Computer Science. I have 4 years of CS under my belt, albeit I only started seriously studying it my Junior year of High School. </br></br>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+In my free time, I enjoy taking naps, browsing Reddit, learning various Computer Science topics (such as swift), working on projects, and, last but not least, playing League. I am an avid League of Legends player and fan (Go TSM!), so feel free to add me in game: <i>Crisios</i>. </br></br>
+
+If you're looking for a summary of my experience, that's not really what this site is for, but feel free to browse the links above. If you want to read about my ramblings and projects, then by all means, continue scrolling!</p>
+	
+<h2>
+<a name="current-projects" class="anchor" href="#current-projects"><span class="octicon octicon-link"></span></a>Current Projects.</h2>
+
+<p> I have a few interesting projects that I picked up due to various interesting aspects that I found appealing. This section will talk about my current projects, if you want to see what I have done in the past, scroll to the bottom or click <a href="#past-projects">here</a>. If you continue reading, you'll find chunks of code and my thought process behind each project. </br></br>
+
+<strong><i>NOTE: This section will always be a work in progress. I will continuously be updating projects as I add more and more features.</strong></i></p>
+
+<!-- PROJECTS SECTION -->
+<h6><a name="lolsearch" class="anchor" href="#lolsearch"><span class="octicon octicon-link"></span></a>League of Legends Search Engine</h6><p><i><a href="http://www.lolsearch.net">http://www.lolsearch.net</a></p></i>
+
+<p>If you play League of Legends, then you most likely know about lolnexus, lolking, op.gg, or some other player and game search platform that provides relavent data. For months, I had used sites like that before I sat down and wondered how exactly they got their data. Did they have dozens of accounts that were scripted to look up players and spectate games? </br></br> 
+
+No &mdash; instead, I found that most of these sites were reliant on Riot Games API to query searches and return the information summoners were searching for. OK, problem solved - back to using those searches. </br></br>
+
+But wait! Wouldn't it be interesting if I could create something like those websites? Not for exposure or marketing, but just to prove to myself that I could create something tangible with my Computer Science skills. And so it beganOK, problem solved - back to using those searches. But wait! Wouldn't it be interesting if I could create something like those websites? Not for exposure or marketing, but just to prove to myself that I could create something tangible with my Computer Science skills. And so it began. </br></br>
+
+Alright, what do I need to do? HTML, CSS, API requests, the list went on. It was a daunting task to take on, especially as a side project, but I found that I enjoyed working. I could work on the site, perfecting the css or php, for hours on end. Now, let's get to the interesting part - what I learned. </br></br>
+
+When I first finished a prototype of the project, I ran into two issues. The first was not having enough api requests to query enough times to fill the table. I was limited in the number of api requests I could do over the course of 10 seconds so if more than 1 or 2 people used the site, they would get get blank areas on information in the table, such as missing division info or no name and champion, etc...</br></br>
+
+My solution at first was simple, as a group of friends for their developer key so I could have each query run off a different key. This would provide me with up to 5x more requests. However, I realized that this was like covering a leak in a ship with my finger, I needed to find out how to optimize my api usage.</br></br>
+
+The second issue was that the website was too slow. By the time it finished one search, other websites had already finished loading the results. I examined my code carefully, unsure where the issue of speed came from. Was it because the website was hosted on my raspberry pi? Was it because processing a massive json array took time? Was it because I was being extremely unefficient somewhere?</br></br>
+
+Eventually, I found out that I was not using my curls effectively and instead should reuse the same curl handler without running curl_close. This would speed up the website a little bit. Finally, I could use curl_multi_init to run the processes in parallel and therefore have multiple requests run at the same time.</br></br>
+
+Let's take this snippet of code from the website as an example.
+
+<pre><code>function kda_stats($region,$list){
+	$id_list=array();
+	$champion_list=array();
+    $nodes=array();
+    foreach($list as $value){
+    	list($id,$champion)=split(',',$value);
+        $id_list[]=$id;
+        $champion_list[]=$champion;
+        $nodes[]=...;
+    }
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+In this function, I wanted to get the kda of everyone in the game. Initially, I searched each summoner individually and then checked his kda for the champion he was playing. I ended up redoing the code and running it through a parallel curl. In this section, I was loading all the url's of the players into the nodes array. I was given the region and a list of summoner ids. Through this, I could use a for loop as an assembly line to produce all the urls.</br></br>
+<pre><code>    $node_count = count($nodes);
+	
+    $curl_arr = array();
+    $master = curl_multi_init();
+</code></pre>
 
-<h3>
-<a name="current-projects" class="anchor" href="#current-projects"><span class="octicon octicon-link"></span></a>Current Projects.</h3>
+I then initialize the multi_init for curl.</br></br>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<pre><code>    for($i = 0; $i < $node_count; $i++) {
+        $url =$nodes[$i];
+        $curl_arr[$i] = curl_init($url);
+        curl_setopt($curl_arr[$i], CURLOPT_RETURNTRANSFER, true);
+        curl_multi_add_handle($master, $curl_arr[$i]);
+    }
 
-<h3>
-<a name="past" class="anchor" href="#past"><span class="octicon octicon-link"></span></a>The Past.</h3>
+    do {
+        curl_multi_exec($master,$running);
+    } while($running > 0);
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+...
+</code></pre>
+
+Finally, I load each url into the array and then run it through the parallel curl before separating the results. I take all the urls that I had created prior and add them to an array after running them through curl_init. Then, they are run in parallel until the JSONs are all returned. I'm not showing the rest of the function, but it ends up calculating and returning the kda and number of games played on each summoner's champion.</br></br>
+
+On a side note, a fun aspect of this project was making the buttons you see on the front page through css. Initially, I was using a drop down menu where you could select the region you wanted to search, but I ended up deciding that radio buttons might look nicer. However, the radio buttons without css looked miserable and I ended up messing with the css quite a bit. </br></br>
+
+<pre><code>&lt;form method="get" id="search" style="margin:0;padding:0"&gt;
+    &lt;span&gt;&lt;input type="text" class="search-rounded" name="name" id="name" placeholder="Enter the Summoner's Name"&gt;&lt;/span&gt;
+    &lt;div class="button centered" onclick="document.getElementById('search').submit()"&gt;Search a Summoner&lt;/div&gt;
+    &lt;div&gt;
+        &lt;br&gt;
+        &lt;input type="radio" id="radio1" name="region" value="na" checked/&gt;
+            &lt;label for="radio1"&gt;NA&lt;/label&gt;
+        &lt;input type="radio" id="radio2" name="region"value="euw"/&gt;
+            &lt;label for="radio2"&gt;EUW&lt;/label&gt;
+        &lt;input type="radio" id="radio3" name="region" value="eune"/&gt;
+            &lt;label for="radio3"&gt;EUNE&lt;/label&gt;
+
+etc... rest of the selections				  
+</code></pre>
+
+Pretty self explanatory, the magic happens in the CSS file where I had two main css blocks.</br></br>
+
+<pre><code>input[type="radio"] + label { ... }
+input[type="radio"]:checked + label { ... }
+</code></pre>
+
+I didn't put the exact css in because of the length, however, I will go over what I did. First, I changed the background to a very faint gradient in order to make the buttons stand out from each other. Furthermore, I changed the cursor to a pointer when it moused over the buttons, further making them stand out. By adjusting the gradient from the edge to be very slight, it gave the buttons depth and therefore made them pop. </br></br>
+
+Then I changed the appearence of the radio button when checked. I gave the button a shadow inwards so that it appeared to be embedded and made the color darker. By doing this, I made it appear to have sunk into the page and therefore have been "selected."
+
+
+</p>
+
+
+<h6><a name="lolstat" class="anchor" href="lolstat"><span class="octicon octicon-link"></span></a>League of Legends Game Log Reader</h6><p><i>reads log files and prints miscellaneous information</p></i>
+<p></p>
+
+
+<h6><a name="website" class="anchor" href="website"><span class="octicon octicon-link"></span></a>Personal Website</h6><p><i>you are on it right now!</p></i>
+
+
+<h2>
+<a name="past-projects" class="anchor" href="#past-projects"><span class="octicon octicon-link"></span></a>Past Projects.</h2>
+
+<p></p>
+
      </section>
     </div>
     <footer>
       <p>Project maintained by <a href="https://github.com/jshao100">jshao100</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme modified from <a href="https://github.com/orderedlist">orderedlist</a></p>
+      <p>Hosted on GitHub Pages.</p>
     </footer>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
