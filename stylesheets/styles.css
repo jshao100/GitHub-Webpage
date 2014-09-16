@@ -94,6 +94,7 @@ header p.view {
 header p.view a {
   color: #06c;
 }
+
 header p.view small {
   font-weight: 400;
 }
@@ -104,7 +105,7 @@ header ul {
   position: absolute;
   z-index: 1;
   right: 20px;
-  top: 20px;
+  top: 30px;
   height: 38px;
   padding: 1px 0;
   background: #5198DF;
@@ -138,6 +139,20 @@ header ul:before {
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0, inset rgba(255, 255, 255, 0.7) 0 -1px 0;
   box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0, inset rgba(255, 255, 255, 0.7) 0 -1px 0;
 }
+
+li:hover {
+   background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #0055cc), color-stop(1, #0066cc) );
+   background:-moz-linear-gradient( center top, #0055cc 5%, #0066cc 100% );
+   filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#0055cc', endColorstr='#0066cc');
+   background-color:#0055cc;
+   cursor:hand;
+}
+li:active {
+   position:relative;
+   top: 1px;
+}
+
+
 header ul li {
   width: 79px;
   float: left;
