@@ -121,6 +121,7 @@ header ul {
   box-shadow: inset rgba(255, 255, 255, 0.45) 0 1px 0, inset rgba(0, 0, 0, 0.2) 0 -1px 0;
   width: auto;
 }
+
 header ul:before {
   content: '';
   position: absolute;
@@ -140,18 +141,17 @@ header ul:before {
   box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0, inset rgba(255, 255, 255, 0.7) 0 -1px 0;
 }
 
-li:hover {
+li#hover:hover {
    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #0073e6), color-stop(1, #0066cc) );
    background:-moz-linear-gradient( center top, #0073e6 5%, #0066cc 100% );
    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#0073e6', endColorstr='#0066cc');
    background-color:#0073e6;
    cursor:hand;
 }
-li:active {
+li#hover:active {
    position:relative;
    top: 1px;
 }
-
 
 header ul li {
   width: 79px;

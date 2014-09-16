@@ -22,9 +22,9 @@
         <p>+1 917.463.8818 
 		<p class="view"><a href="https://github.com/jshao100/GitHub-Webpage">View the Project on GitHub <small>jshao100/GitHub-Webpage</small></a></p>
         <ul>
-          <li><a href="Resume.pdf">View<strong>Resume</strong></a></li>
-          <li><a href="https://github.com/jshao100/">View<strong>GitHub</strong></a></li>
-		  <li><a href="https://www.linkedin.com/in/JamesShao">View<strong>LinkedIn</strong></a></li>
+          <li id="hover"><a href="Resume.pdf">View<strong>Resume</strong></a></li>
+          <li id="hover"><a href="https://github.com/jshao100/">View<strong>GitHub</strong></a></li>
+		  <li id="hover"><a href="https://www.linkedin.com/in/JamesShao">View<strong>LinkedIn</strong></a></li>
         </ul>
       </header>
       <section>
@@ -40,7 +40,14 @@ If you're looking for a summary of my experience, that's not really what this si
 <h2>
 <a name="current-projects" class="anchor" href="#current-projects"><span class="octicon octicon-link"></span></a>Current Projects.</h2>
 
-<p> I have a few interesting projects that I picked up due to various interesting aspects that I found appealing. This section will talk about my current projects, if you want to see what I have done in the past, scroll to the bottom or click <a href="#past-projects">here</a>. If you continue reading, you'll find chunks of code and my thought process behind each project. </br></br>
+<p> I have a few interesting projects that I picked up due to various interesting aspects that I found appealing. This section will talk about my current projects, if you want to see what I have done in the past, scroll to the bottom or click <i><a href="#past-projects">here</a></i>. If you continue reading, you'll find chunks of code and my thought process behind each project. </br></br>
+
+I have provided some quicklinks for convenience:
+<ul class="list">
+<li style="display:block;float:left;"><a href="#lolsearch">LoL Search Engine</a></li></br>
+<li style="display:block;float:left;"><a href="#lolstat">LoL Log Reader</a></li></br>
+<li style="display:block;float:left;"><a href="#website">Website</a></li></br>
+</ul>
 
 <strong><i>NOTE: This section will always be a work in progress. I will continuously be updating projects as I add more and more features.</strong></i></p>
 
@@ -54,9 +61,7 @@ No &mdash; instead, I found that most of these sites were reliant on Riot Games 
 But wait! Wouldn't it be interesting if I could create something like those websites? Not for exposure or marketing, but just to prove to myself that I could create something tangible with my Computer Science skills. And so it beganOK, problem solved - back to using those searches. But wait! Wouldn't it be interesting if I could create something like those websites? Not for exposure or marketing, but just to prove to myself that I could create something tangible with my Computer Science skills. And so it began. </br></br>
 
 Alright, what do I need to do? HTML, CSS, API requests, the list went on. It was a daunting task to take on, especially as a side project, but I found that I enjoyed working. I could work on the site, perfecting the css or php, for hours on end. Now, let's get to the interesting part - what I learned. </br></br>
-
-When I first finished a prototype of the project, I ran into two issues. The first was not having enough api requests to query enough times to fill the table. I was limited in the number of api requests I could do over the course of 10 seconds so if more than 1 or 2 people used the site, they would get get blank areas on information in the table, such as missing division info or no name and champion, etc...</br></br>
-
+When I first finished a prototype of the project, I ran into two issues. The first was not having enough api requests to query enough times to fill the table. I was limited in the number of api requests I could do over the course of 10 seconds so if more than 1 or 2 people used the site, they would get get blank areas on information in the table, such as missing division info or no name and champion, etc...</br></br> 
 My solution at first was simple, as a group of friends for their developer key so I could have each query run off a different key. This would provide me with up to 5x more requests. However, I realized that this was like covering a leak in a ship with my finger, I needed to find out how to optimize my api usage.</br></br>
 
 The second issue was that the website was too slow. By the time it finished one search, other websites had already finished loading the results. I examined my code carefully, unsure where the issue of speed came from. Was it because the website was hosted on my raspberry pi? Was it because processing a massive json array took time? Was it because I was being extremely unefficient somewhere?</br></br>
