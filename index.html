@@ -54,7 +54,7 @@ I have provided some quicklinks for convenience:
 <!-- PROJECTS SECTION -->
 <h6><a name="lolsearch" class="anchor" href="#lolsearch"><span class="octicon octicon-link"></span></a>League of Legends Search Engine</h6><p><i><a href="http://www.lolsearch.net">http://www.lolsearch.net</a></p></i>
 
-<p>If you play League of Legends, then you most likely know about lolnexus, lolking, op.gg, or some other player and game search platform that provides relavent data. For months, I had used sites like that before I sat down and wondered how exactly they got their data. Did they have dozens of accounts that were scripted to look up players and spectate games? </br></br> 
+<p>If you play League of Legends, then you most likely know about lolnexus, lolking, op.gg, or some other player and game search platform that provides relevant data. For months, I had used sites like that before I sat down and wondered how exactly they got their data. Did they have dozens of accounts that were scripted to look up players and spectate games? </br></br> 
 
 No &mdash; instead, I found that most of these sites were reliant on Riot Games API to query searches and return the information summoners were searching for. OK, problem solved - back to using those searches. </br></br>
 
@@ -110,7 +110,7 @@ Finally, I load each url into the array and then run it through the parallel cur
 On a side note, a fun aspect of this project was making the buttons you see on the front page through css. Initially, I was using a drop down menu where you could select the region you wanted to search, but I ended up deciding that radio buttons might look nicer. However, the radio buttons without css looked miserable and I ended up messing with the css quite a bit. </br></br>
 
 <pre><code>&lt;form method="get" id="search" style="margin:0;padding:0"&gt;
-    &lt;span&gt;&lt;input type="text" class="search-rounded" name="name" id="name" placeholder="Enter the Summoner's Name"&gt;&lt;/span&gt;
+    &lt;span&gt;&lt;input type="text" class="search-rounded" name="name" id="name" placeholder="..."&gt;&lt;/span&gt;
     &lt;div class="button centered" onclick="document.getElementById('search').submit()"&gt;Search a Summoner&lt;/div&gt;
     &lt;div&gt;
         &lt;br&gt;
@@ -132,15 +132,190 @@ input[type="radio"]:checked + label { ... }
 
 I didn't put the exact css in because of the length, however, I will go over what I did. First, I changed the background to a very faint gradient in order to make the buttons stand out from each other. Furthermore, I changed the cursor to a pointer when it moused over the buttons, further making them stand out. By adjusting the gradient from the edge to be very slight, it gave the buttons depth and therefore made them pop. </br></br>
 
-Then I changed the appearence of the radio button when checked. I gave the button a shadow inwards so that it appeared to be embedded and made the color darker. By doing this, I made it appear to have sunk into the page and therefore have been "selected."
+Then I changed the appearance of the radio button when checked. I gave the button a shadow inwards so that it appeared to be embedded and made the color darker. By doing this, I made it appear to have sunk into the page and therefore have been "selected."</br></br>
 
-
+To Be Continued...
 </p>
 
+<!-- BREAK -->
+</br><hr></br>
 
-<h6><a name="lolstat" class="anchor" href="lolstat"><span class="octicon octicon-link"></span></a>League of Legends Game Log Reader</h6><p><i>reads log files and prints miscellaneous information</p></i>
-<p></p>
 
+<h6><a name="lolstat" class="anchor" href="https://github.com/jshao100/lolstat"><span class="octicon octicon-link"></span>League of Legends Log Parser</a></h6><p><i>reads log files and prints miscellaneous information</p></i>
+<p>One of my more recent projects, I was digging through my old python files when I stumbled upon this code. I picked it up nearly a year ago from <a href="http://www.lolparse.com">lolparse</a> before it was taken down. Since then, it has sat in my python folder, untouched, until now. If you want to tae a look at the complete code, click the title link for the github repository. Otherwise, I'll do a walkthrough of the code in logical order.</br></br>
+
+While there are now sites like <a href="http://www.1lann.github.io/lolreader">lolreader</a>, I was intruigued and decided that I would figure out how the log files were read and processed. My main goal for this project was to understand how the code worked and possibly modify it for my own means. I ended up rewriting a bit of the code for various reasons, but mainly because Riot Games changed how the logs were recorded sometime last year. As seen in examples below, code that worked a year ago needed to be redone. Let's start in the main.</br>
+
+<pre><code>#main
+if __name__ == "__main__":
+    run_report("Applications/League of Legends.app/Contents/LoL/Logs/Game - R3d Logs")
+    #windows os users should redirect to the appropriate Logs folder
+</code></pre>
+
+If I recall correctly, this code was created before the official mac client was released. Because of this, there was only a windows operating system path available. What's interesting is the first line &mdash; when the python interpreter reads the source, it executes the code found. If python is running the module as the main program, <code>__name__</code> is set to have the value <code>"__main__"</code>. However, if the file is imported from a different module, <code>__name__</code> will be set to that module's name. By doing this, the program can be imported and the functions can be run by another module. Moving on, the imports are fairly self explanatory.</br></br>
+
+<pre><code>from __future__ import print_function
+import os, os.path
+import sys
+import re
+</code></pre>
+
+This is all very simple stuff. Importing from <code>__future__</code> sets a flag that tells the python interpreter how to behave. The <code>os</code>, <code>os.path</code>, and <code>sys</code> allow us to manipulate the Python environment and move through the file directories. Finally, <code>re</code> is used to parse out relevant keyword information through regex.</br></br>
+
+The main then calls the function <code>def run_report(folder)</code> which takes the log folder as an import.</br></br>
+
+<pre><code>def run_report(folder):
+    if load_data():
+        print('** Loaded existing data')
+    else:
+        print('** Parsing log files')
+        read_files(folder)
+        save_data()
+        print('** Saved data for reuse')
+        print()
+
+    print_maps()
+    summoner = print_summoners()
+    summoner_stats(summoner)
+</code></pre>
+
+For now, let's skip the load_data() function and just assume that it does what it implies - checks whether there is a .txt file that was previously saved. The code then calls the <code>read_files(folder)</code> function which will return processed information from the log file's contents. This is then saved to a file in the directory through the save_data() function. Following the function <code>read_files(folder)</code>, we get to the heart of the code.</br></br>
+
+<pre><code>def read_files(folder):
+    files = os.listdir(folder)
+    map_expr = re.compile(r'Initializing GameModeComponents for mode=(.+)')
+    #OLDER VERSION - Stopped ~ 2013
+    #map_expr = re.compile(r'Started Map (.+)')
+    champ_expr = re.compile(r'Hero (.+) created for (.+)')
+</code></pre>
+
+Going through all the files, we use regular expressions via the re module we imported to parse out relavent information. I went through my friend's log files that date back to late 2012 and found that the parser could not read all of his files. In fact, approximately half of them returned no map information but complete champion information. By going through the files and comparing them, I found that at some point, Riot stopped recording information about the gamemode and map the same way. Previously, they used numbers which pointed to various gamemode and map ids, however, they recently have switched over to what you see now. </br></br>
+
+From what I've found, the issue with this is that you cannot differentiate between certain game modes and types. Twisted Treeline and Summoner's Rift are both classified as CLASSIC, that's not even mentioning the fact that you can't tell whether the game is a normal or ranked. Furthermore, special gamemodes such as URF or One For All are not accounted for. However, the newest gamemode, Ascension, seems to have its own naming scheme which may lead to better data in the future.</br></br>
+
+<pre><code>#log analysis
+map_names = {
+    "CLASSIC.": "Summoner's Rift / Twisted Treeline",
+    "ARAM.": "Howling Abyss - ARAM / One for All",
+    "ODIN.": "Crystal Scar - Dominion",
+    "ASCENSION.": "Crystal Scar - Ascension",
+    "TUTORIAL.": "Howling Abyss - Tutorial",
+    "ONEFORALL.": "Summoner's Rift - One for All",
+    "FIRSTBLOOD": "Howling Abyss - Snowdown Showdown"
+}
+</code></pre>
+
+The parsed map expressions can later be run against a dictionary that prints the resulting gamemode and map type. Now, we want the user to know that the program is running so that they aren't staring at a blank screen while the log files are being parsed and interrupt the proccess with a refresh or stop command.</br></br>
+
+<pre><code>    last_percent = 0
+    for i, file in enumerate(files):
+        percent = int(100 * i / len(files))
+        if int(percent / 10) > int(last_percent / 10):
+            last_percent = percent
+            print('Completed %2d%%' % percent)
+</code></pre>
+
+The <code>for</code> loop is responsible for actually parsing the data by running each file through it at a time. In order to keep the user updated on the progress of the parsing, it finds the number of files in the folder, and then calculates how much it has completed based on the current file number.</br></br>
+
+<pre><code>        with open(os.path.join(folder, file)) as f:
+            lines = f.readlines()
+
+        num = 0
+        for line in lines:
+            match = map_expr.search(line)
+            if match:
+                add_map(match.group(1))
+                continue
+
+            match = champ_expr.search(line)
+            if match:
+                add_champ(match.group(1), match.group(2))
+                num += 1
+                continue
+
+            if 'GAMESTATE_GAMELOOP Begin' in line:
+                break
+
+    print('Finished reading %d log files' % len(files))
+</code></pre>
+
+We run through each file, taking each line as input and comparing it to the search expression we created above for gamemode and champion. If it matches, the string is added and the code continues. Once it reaches the end of the relevant log informatin, it breaks the loop and moves on in order to save time.</br></br>
+
+Okay, so we've returned the relevant information, now what? Now we move onto printing the data in a readable format. If you ran the code for yourself from the git download (found <a href="https://github.com/jshao100/lolstat">here</a>). You would realize that the processed data is ugly and unreader, we need to format it for presentation. First comes <code>print_maps()</code>.</br></br>
+
+<pre><code>def print_maps():
+    print('== Top Maps ==')
+    named_maps = {map_names.get(k,k): maps[k] for k in maps.keys()}
+    #OLD VERSION - Stopped ~ 2013
+    #named_maps = {map_names.get(k[:3],k): maps[k] for k in maps.keys()}
+    pretty_print(named_maps)
+    print()
+</code></pre>
+
+In older iterations of the logs and code, map data was stored by number, thus the commented out section that grabs the number and compares it against a dictionary. The current line compares the string with the new dictionary shown a few sections above and then returns the map's name and/or gamemode. For now, we'll ignore <code>pretty_print</code> and move on. We'll return to <code>pretty_print</code> at the end because it is called by all the functions before anything can print.</br></br>
+
+We then run <code>print_summoners()</code> and then input the return information into <code>summoner_stats</code>.</br></br>
+
+<pre><code>def print_summoners():
+    print('== Top Summoners ==')
+    played_with = {k: champs[k]['total'] for k in champs.keys()}
+    r = pretty_print(played_with)
+    print()
+    return r
+</code></pre>
+
+Taking a look at the data file, we find that information is sorted by</br></br>
+
+<pre><code>{map data}
+{champ data}
+</code></pre>
+
+Expanding on champ data, we find that it stores data in this format:</br></br>
+
+<pre><code>name
+    total_games
+    champions
+        champ_name(skin):number_of_games
+        champ_name(skin):number_of_games
+        <i>continued until all champions listed</i>
+name
+name
+<i>continued until all names listed</i>
+</code></pre>
+
+The function <code>print_summoners</code> prints the top summoners you have played with by running through all the names in the champ data and getting the value for 'total.' All of this is printed by <code>pretty_print</code>. Finally, the result is returned so that more information can be extracted in the <code>summoner_stats</code> function. </br></br>
+
+<pre><code>def summoner_stats(name):
+    print('== Stats for %s ==' % name)
+    user = champs[name]
+    print('Total games:', user['total'])
+
+    print('Top 10 Champions')
+    pretty_print(user['champs'])
+    print()
+
+    print('Top 10 Skins')
+    pretty_print(user['skins'])
+    print()
+</code></pre>
+
+The most played summoner name is then placed into this function. By navigating the champ data's structure, you can print the user's total number of games, champion, and skins of choice. This function is rather self-explanatory so it's time to move into <code>pretty_print</code>.</br></br>
+
+<pre><code>def pretty_print(data, most=10):
+    keys = sorted(data.keys(), key=data.get, reverse=True)
+    maxlen = max(len(k) for k in keys[:most])
+    fmt = '%-' + str(maxlen) + 's : %s'
+    for k in keys[:most]:
+        print(fmt % (k, data[k]))
+    return keys[0]
+</code></pre>
+
+The function takes two inputs, the data and the number of items you want to print. The data is in the form of a dictionary, which means that it can then be sorted. Once it is sorted, you can produce a string that acts as a master template for the printing proccess. By using string format, the code just needs to run through the number of results the user wants (<code>most=10</code>), printing the information through the master template by inserting the relevant dictionary key/value entry. Finally, the first entry is returned, because logically, the top played would be the user himself.</br></br>
+
+And that is essentially how the code works! I just cut it into readable chunks and presented it in the order of operation. My goal with this project is not to create something cool that I can publish, but instead to understand how the code works. If I were to write my own from scratch, it may not be as elegant or efficient. By understanding this code, I can take similar problems and solve them far more efficiently than before.</br>
+</p>
+
+</br><hr></br>
 
 <h6><a name="website" class="anchor" href="website"><span class="octicon octicon-link"></span></a>Personal Website</h6><p><i>you are on it right now!</p></i>
 
