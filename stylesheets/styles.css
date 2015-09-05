@@ -147,9 +147,11 @@ li#hover:hover {
    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#0073e6', endColorstr='#0066cc');
    background-color:#0073e6;
    cursor:hand;
+	 border-radius:8px;
 }
 li#hover:active {
    position:relative;
+	 border-radius:8px;
    top: 1px;
 }
 
